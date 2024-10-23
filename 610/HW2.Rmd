@@ -1,0 +1,120 @@
+---
+title: "HW2"
+output: html_document
+date: "2024-09-16"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+## Q2
+```{r}
+path = "C:\\Users\\LEGION\\Downloads\\btrips2015-7-1-4.rds"
+bike_data <- readRDS(path)
+library(ggplot2)
+library(lme4)
+library(dplyr)
+```
+
+### (a)
+
+```{r}
+bike_data$log_duration <- log(bike_data$duration)
+anova_model <- aov(log_duration ~ station, data = bike_data)
+anova_summary <- summary(anova_model)
+anova_summary
+```
+
+The ANOVA analysis shows a high F-value of 7.699, with an associated p-value less that 2e-16, indicating strong statistical significance. We reject the null hypothesis that the mean log trip duration is the same for all stations. This suggests that there is substantial across-station heterogeneity in the log trip duration. The variation in trip duration is significantly different across stations, implying that the station of origin plays an important role n explaining differences in trip lengths.
+
+### (b)
+
+```{r}
+means_data <- bike_data %>%
+  group_by(station) %>%
+  summarize(mean_log_duration = mean(log_duration), sample_size = n())
+grand_mean <- mean(bike_data$log_duration)
+
+ggplot(means_data, aes(x = sample_size, y = mean_log_duration)) +
+  geom_point() +
+  geom_hline(yintercept = grand_mean, linetype = "dashed", color = "red") +
+  labs(title = "Sample Means of Log Duration vs Sample Size",
+       x = "Sample Size",
+       y = "Mean Log Duration")
+```
+
+The red dotted line in the middle represent the grand mean of the data. We can see that with small sample size, the means of log trip duration are more spread around the grand mean, indicating high variance. When the sample size increases, the mean log duration tend to be closer to the grand mean. 
+
+### (c)
+
+```{r}
+hierarchical_model <- lmer(log_duration ~ (1|station), data = bike_data)
+summary_hierarchical <- summary(hierarchical_model)
+mu <- fixef(hierarchical_model)[1]  
+sigma_sq <- attr(VarCorr(hierarchical_model), "sc")^2  
+tau_sq <- as.data.frame(VarCorr(hierarchical_model))$vcov[1] 
+cat("Mu:", mu, "\n")
+cat("Tau^2:", tau_sq, "\n")
+cat("Sigma^2:", sigma_sq, "\n")
+```
+```{r}
+summary_hierarchical
+```
+
+### (d)
+
+```{r}
+sample_means <- bike_data %>%
+  group_by(station) %>%
+  summarize(sample_mean = mean(log_duration))
+eb_estimates <- ranef(hierarchical_model)$station[,1] + mu
+sample_means$eb_estimates <- eb_estimates
+ggplot(sample_means, aes(x = sample_mean, y = eb_estimates)) +
+  geom_point() +
+  geom_hline(yintercept = grand_mean, linetype = "dashed", color = "red") +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Sample Means vs Empirical Bayes Estimates",
+       x = "Sample Means",
+       y = "Empirical Bayes Estimates")
+```
+
+The plot demonstrates the effect of empirical Bayes (EB) shrinkage, where the EB estimates pull station-specific sample means towards the overall grand mean (indicated by the horizontal dashed line). We observe that the line formed by the points in the plot deviates from the 45-degree line (red dashed diagonal), indicating the shrinkage effect. The empirical Bayes estimates have a smaller range compared to the sample means, reflecting the tendency of EB to reduce variance by moving estimates towards the central tendency.
+
+Regarding the amount of shrinkage, the two outliers in the upper-right and lower left of the plot experience significant shrinkage, as their sample means deviate substantially from the grand mean. In contrast, the points in the middle of the plot, where sample means are closer to the grand mean, exhibit less shrinkage. 
+
+### (e)
+
+```{r}
+alpha <- 0.05
+sig_hat <- as.data.frame(VarCorr(hierarchical_model))$sdcor[1]
+ci_data <- bike_data %>%
+  group_by(station) %>%
+  summarize(mean_log_duration = mean(log_duration),
+            sample_size = n()) %>%
+  rowwise() %>%
+  mutate(
+    t_crit = qt(1 - alpha / 2, df = sample_size - 1),  # t critical value for 95% confidence
+    margin_error = t_crit * sqrt(sig_hat / sample_size),  # Margin of error
+    lower_ci = mean_log_duration - margin_error,  # Lower bound of CI
+    upper_ci = mean_log_duration + margin_error   # Upper bound of CI
+  )
+ci_data <- ci_data %>% arrange(mean_log_duration)
+
+ggplot(ci_data, aes(x = reorder(station, mean_log_duration), y = mean_log_duration)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2, color = "blue") + 
+  labs(title = "95% Confidence Intervals for Each Station's Mean Log Duration",
+       x = "Station (ordered by increasing mean)",
+       y = "Mean Log Duration") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+```{r}
+df_samplesize <- bike_data %>%
+  group_by(station) %>%
+  summarize(sample_size = n()) %>%
+  arrange(sample_size)
+head(df_samplesize)
+```
+
+The two outlying groups are schools 'UW-01' and 'DPD-03', as they have much larger confidence intervals, and their confidence intervals does not overlap with many other schools. We can see from the chart that these two schools have the lowest sample means, which may causes them to be the outliers.

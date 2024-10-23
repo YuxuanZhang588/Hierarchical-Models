@@ -1,0 +1,371 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\hypertarget{q4-answers-and-code}{%
+\section{Q4 Answers and Code}\label{q4-answers-and-code}}
+
+\hypertarget{yuxuan-zhang}{%
+\paragraph{Yuxuan Zhang}\label{yuxuan-zhang}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nels}\OtherTok{\textless{}{-}}\FunctionTok{dget}\NormalTok{(}\StringTok{"https://www2.stat.duke.edu/\textasciitilde{}pdh10/Teaching/610/Homework/nels\_math\_ses"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{part-a}{%
+\subsection{Part a}\label{part-a}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grand\_mean }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{mathscore, }\AttributeTok{na.rm=}\ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{grand\_mean}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 48.07446
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{group\_mean }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(mathscore }\SpecialCharTok{\textasciitilde{}}\NormalTok{ school, }\AttributeTok{data =}\NormalTok{ nels, }\AttributeTok{FUN =}\NormalTok{ mean)}
+\NormalTok{group\_mean\_var }\OtherTok{\textless{}{-}} \FunctionTok{var}\NormalTok{(group\_mean}\SpecialCharTok{$}\NormalTok{mathscore)}
+\NormalTok{group\_mean\_var}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 30.99446
+\end{verbatim}
+
+The grand mean is 48.074, the variance of the group means is 30.994.
+
+\hypertarget{dotplot}{%
+\paragraph{Dotplot}\label{dotplot}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gdotplot }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y, g, }\AttributeTok{xlab=}\StringTok{"group"}\NormalTok{, }\AttributeTok{ylab=}\StringTok{"response"}\NormalTok{, }\AttributeTok{mcol=}\StringTok{"blue"}\NormalTok{, }\AttributeTok{ocol=}\StringTok{"lightblue"}\NormalTok{, }\AttributeTok{sortgroups=}\ConstantTok{TRUE}\NormalTok{, ...) \{}
+\NormalTok{  m }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(}\FunctionTok{unique}\NormalTok{(g))}
+\NormalTok{  rg }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(}\FunctionTok{tapply}\NormalTok{(y, g, mean), }\AttributeTok{ties.method=}\StringTok{"first"}\NormalTok{)}
+  \ControlFlowTok{if}\NormalTok{(sortgroups }\SpecialCharTok{==} \ConstantTok{FALSE}\NormalTok{) \{}
+\NormalTok{    rg }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\NormalTok{m}
+    \FunctionTok{names}\NormalTok{(rg) }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(g)}
+\NormalTok{  \}}
+  \FunctionTok{plot}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,m), }\FunctionTok{range}\NormalTok{(y), }\AttributeTok{type=}\StringTok{"n"}\NormalTok{, }\AttributeTok{xlab=}\NormalTok{xlab, }\AttributeTok{ylab=}\NormalTok{ylab)}
+  
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \FunctionTok{unique}\NormalTok{(g)) \{}
+\NormalTok{    yj }\OtherTok{\textless{}{-}}\NormalTok{ y[g }\SpecialCharTok{==}\NormalTok{ j]}
+\NormalTok{    rj }\OtherTok{\textless{}{-}}\NormalTok{ rg[}\FunctionTok{match}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(j), }\FunctionTok{names}\NormalTok{(rg))]}
+\NormalTok{    nj }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(yj)}
+    \FunctionTok{segments}\NormalTok{(}\FunctionTok{rep}\NormalTok{(rj, nj), }\FunctionTok{max}\NormalTok{(yj), }\FunctionTok{rep}\NormalTok{(rj, nj), }\FunctionTok{min}\NormalTok{(yj), }\AttributeTok{col=}\StringTok{"gray"}\NormalTok{)}
+    \FunctionTok{points}\NormalTok{(}\FunctionTok{rep}\NormalTok{(rj, nj), yj, }\AttributeTok{col=}\NormalTok{ocol, ...)}
+    \FunctionTok{points}\NormalTok{(rj, }\FunctionTok{mean}\NormalTok{(yj), }\AttributeTok{pch=}\DecValTok{16}\NormalTok{, }\AttributeTok{cex=}\FloatTok{1.5}\NormalTok{, }\AttributeTok{col=}\NormalTok{mcol)}
+\NormalTok{  \}}
+\NormalTok{\}}
+\FunctionTok{gdotplot}\NormalTok{(}\AttributeTok{y =}\NormalTok{ nels}\SpecialCharTok{$}\NormalTok{mathscore, }\AttributeTok{g =}\NormalTok{ nels}\SpecialCharTok{$}\NormalTok{school, }\AttributeTok{xlab =} \StringTok{"School"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Math Score"}\NormalTok{, }\AttributeTok{mcol =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{ocol =} \StringTok{"lightblue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW1_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\hypertarget{part-b}{%
+\subsection{Part b}\label{part-b}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(}\FunctionTok{lm}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{mathscore }\SpecialCharTok{\textasciitilde{}} \FunctionTok{as.factor}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{school)))}
+\NormalTok{result}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: nels$mathscore
+##                          Df Sum Sq Mean Sq F value    Pr(>F)    
+## as.factor(nels$school)   99  48825  493.18   5.834 < 2.2e-16 ***
+## Residuals              1893 160024   84.53                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+The MSA is 493.18, much larger than MSW, which is 84.53. The F-score of
+5.834 indicates that there is more variation between schools than within
+schools, suggesting that the schools are heterogeneous.
+
+Our null hypothesis would be: All schools' mean math score are the same.
+In this case, out P-value is reported as less than 2.2e-16, which is
+extremely small. This suggest that there is strong evidence to reject
+the null hypothesis that all school means are equal. We can conclude
+that there are statistically significant differences in the mean math
+scores between schools.
+
+\hypertarget{part-c}{%
+\subsection{Part c}\label{part-c}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Compute residuals}
+\NormalTok{model }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{mathscore }\SpecialCharTok{\textasciitilde{}} \FunctionTok{as.factor}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{school), }\AttributeTok{data =}\NormalTok{ nels)}
+\NormalTok{residuals\_model }\OtherTok{\textless{}{-}} \FunctionTok{resid}\NormalTok{(model)}
+\NormalTok{nels}\SpecialCharTok{$}\NormalTok{residuals }\OtherTok{\textless{}{-}}\NormalTok{ residuals\_model}
+\FunctionTok{qqnorm}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{residuals)}
+\FunctionTok{qqline}\NormalTok{(nels}\SpecialCharTok{$}\NormalTok{residuals, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW1_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+The residuals follow a straight line on the Q-Q plot, which means that
+the normal model seem reasonable.
+
+\hypertarget{part-d}{%
+\subsection{Part d}\label{part-d}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{max\_school }\OtherTok{\textless{}{-}}\NormalTok{ group\_mean[}\FunctionTok{which.max}\NormalTok{(group\_mean}\SpecialCharTok{$}\NormalTok{mathscore), }\StringTok{"school"}\NormalTok{]}
+\NormalTok{min\_school }\OtherTok{\textless{}{-}}\NormalTok{ group\_mean[}\FunctionTok{which.min}\NormalTok{(group\_mean}\SpecialCharTok{$}\NormalTok{mathscore), }\StringTok{"school"}\NormalTok{]}
+\NormalTok{max\_school}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3122
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{min\_school}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1302
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{max\_school\_data }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(nels, school }\SpecialCharTok{==}\NormalTok{ max\_school)}\SpecialCharTok{$}\NormalTok{mathscore}
+\NormalTok{min\_school\_data }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(nels, school }\SpecialCharTok{==}\NormalTok{ min\_school)}\SpecialCharTok{$}\NormalTok{mathscore}
+\FunctionTok{t.test}\NormalTok{(max\_school\_data)}\SpecialCharTok{$}\NormalTok{conf.int}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 51.88715 78.14785
+## attr(,"conf.level")
+## [1] 0.95
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{t.test}\NormalTok{(min\_school\_data)}\SpecialCharTok{$}\NormalTok{conf.int}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 32.78774 40.37797
+## attr(,"conf.level")
+## [1] 0.95
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{length}\NormalTok{(max\_school\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{length}\NormalTok{(min\_school\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 21
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  The width of the highest mean school is
+  \(78.14785−51.88715 = 26.2607\).
+\item
+  The width of the lowest mean school is
+  \(40.37797 − 32.78774 = 7.59023\).
+\end{itemize}
+
+We can see that the confidence interval width of the highest mean school
+is much larger than that of the lowest mean school. I believe the
+difference between the sample means of these two groups \textbf{does
+not} reflect the likely difference in subpopulation means. While the
+confidence intervals between the two schools does not overlap, showing a
+notable difference, this does not accurately reflect the true difference
+in the subpopulation means due to the sample sizes. We can see that the
+highest mean score school has only 4 samples, while the lowest mean
+score school has 21 samples. This causes the highest means school to
+have a large variance, and thus a large CI interval. Therefore, the
+difference may not accurately reflect the true difference in the
+subpopulation means.
+
+\hypertarget{part-e}{%
+\subsection{Part e}\label{part-e}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{group\_means\_mathdeg }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(mathdeg }\SpecialCharTok{\textasciitilde{}}\NormalTok{ school, }\AttributeTok{data =}\NormalTok{ nels, }\AttributeTok{FUN =}\NormalTok{ mean)}
+\NormalTok{group\_means\_ses }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(ses }\SpecialCharTok{\textasciitilde{}}\NormalTok{ school, }\AttributeTok{data =}\NormalTok{ nels, }\AttributeTok{FUN =}\NormalTok{ mean)}
+\NormalTok{group\_means\_mathscore }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(mathscore }\SpecialCharTok{\textasciitilde{}}\NormalTok{ school, }\AttributeTok{data =}\NormalTok{ nels, }\AttributeTok{FUN =}\NormalTok{ mean)}
+\NormalTok{group\_means\_combined }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(group\_means\_mathscore, group\_means\_mathdeg, }\AttributeTok{by =} \StringTok{"school"}\NormalTok{)}
+\NormalTok{group\_means\_combined }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(group\_means\_combined, group\_means\_ses, }\AttributeTok{by =} \StringTok{"school"}\NormalTok{)}
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(group\_means\_combined}\SpecialCharTok{$}\NormalTok{ses, group\_means\_combined}\SpecialCharTok{$}\NormalTok{mathscore,}
+     \AttributeTok{xlab =} \StringTok{"Mean Socio{-}Economic Status (SES)"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Mean Math Score"}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"Math Score vs SES"}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{21}\NormalTok{, }\AttributeTok{bg =} \StringTok{"blue"}\NormalTok{)}
+\NormalTok{lm\_ses }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(mathscore }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ses, }\AttributeTok{data =}\NormalTok{ group\_means\_combined)}
+\FunctionTok{abline}\NormalTok{(lm\_ses, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+
+\FunctionTok{plot}\NormalTok{(group\_means\_combined}\SpecialCharTok{$}\NormalTok{mathdeg, group\_means\_combined}\SpecialCharTok{$}\NormalTok{mathscore,}
+     \AttributeTok{xlab =} \StringTok{"Mean Mathdeg"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Mean Math Score"}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"Math Score vs Mathdeg"}\NormalTok{, }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{21}\NormalTok{, }\AttributeTok{bg =} \StringTok{"blue"}\NormalTok{)}
+\NormalTok{lm\_mathdeg }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(mathscore }\SpecialCharTok{\textasciitilde{}}\NormalTok{ mathdeg, }\AttributeTok{data =}\NormalTok{ group\_means\_combined)}
+\FunctionTok{abline}\NormalTok{(lm\_mathdeg, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW1_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+In the ``Math Score vs SES'' plot, there seems to be a positive
+relationship between the mean socio-economic status and the mean math
+score. As SES increases, the average math score tend to increase as
+well. This suggests that students from schools with higher SES on
+average tend to perform better in math. This could indicate that
+socio-economic factors play a role in student performance. Higher SES
+could mean more resources, better access to learning materials, and
+perhaps higher quality teaching, all of which might contribute to higher
+average math scores.
+
+In the ``Math Score vs Mathdeg'', there doesn't seem to be a clear
+linear trend between mean mathdeg. The points are more spread out,
+indicating a weaker or less clear relationship.
+
+Based on our observations of the two plots, we conjecture that SES seems
+to be an important source of heterogeneity for the school-specific mean
+math score, as evidenced by the positive relationship in the first plot.
+
+\end{document}

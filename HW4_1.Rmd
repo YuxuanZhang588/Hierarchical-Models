@@ -1,0 +1,60 @@
+---
+title: "HW4"
+output: html_document
+date: "2024-09-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+cd4 = read.table("C:/Users/LEGION/OneDrive - Duke University/610/cd4.dat", header = TRUE)
+```
+### 3(a)
+```{r}
+library(lme4)
+lmem_model <- lmer(cd4 ~ time + trt + time * trt + (time | pid), data = cd4)
+summary(lmem_model)
+```
+```{r}
+confint(lmem_model)
+```
+
+
+### 3(b)
+```{r}
+library(ggplot2)
+ranef_lme <- as.matrix(ranef(lmem_model)$pid)
+fixed_effects <- fixef(lmem_model)
+shrinkage_estimates <- sweep(ranef_lme, 2, fixed_effects, "+")
+colnames(shrinkage_estimates) <- c("Intercept", "Slope")
+
+ols_models <- lapply(split(cd4, cd4$pid), function(data) {
+  lm(cd4 ~ time, data = data)
+})
+
+# Extract slopes and intercepts for each OLS model
+ols_coeffs <- do.call(rbind, lapply(ols_models, coef))
+colnames(ols_coeffs) <- c("Intercept", "Slope")
+
+
+create_lines <- function(coeffs, data, color = "black") {
+  ggplot(data, aes(x = time, y = cd4)) +
+    geom_abline(intercept = coeffs[, "Intercept"], slope = coeffs[, "Slope"], color = color) +
+    theme_minimal() +
+    ylim(min(cd4$cd4), max(cd4$cd4))
+}
+ols_plot <- create_lines(ols_coeffs, cd4) +
+  ggtitle("OLS regression lines")
+
+hlm_plot <- create_lines(shrinkage_estimates, cd4) +
+  ggtitle("HLM shrinkage estimates")
+hlm_plot
+ols_plot
+```
+### 3(c)
+```{r}
+residuals(lmem_model)
+plot(residuals(lmem_model))
+```
+

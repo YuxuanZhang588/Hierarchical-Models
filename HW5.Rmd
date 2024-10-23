@@ -1,0 +1,336 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+### Q1 (d)
+```{r}
+mpar<-function(...){par(mar=c(3,3,1,1),mgp=c(2,.75,0),tck=-.025,...)}
+library(lme4)
+library(ggplot2)
+set.seed(610)
+m <- 20
+n <- 20 
+num_simulations <- 1000
+
+beta0 <- 1
+beta1 <- 1
+beta2 <- 1
+sigma2 <- 1
+psi0_sq <- 1
+psi1_sq <- 0
+psi01 <- 0
+
+LRT_stats <- numeric(num_simulations)
+p_values <- numeric(num_simulations)
+
+for (s in 1:num_simulations) {
+  w_j <- rnorm(m)
+  a0_j <- rnorm(m, mean = 0, sd = sqrt(psi0_sq))
+  x_ij <- rnorm(m * n)
+  epsilon_ij <- rnorm(m * n, mean = 0, sd = sqrt(sigma2))
+  
+  group <- rep(1:m, each = n)
+  y <- beta0 + beta1 * x_ij + beta2 * rep(w_j, each = n) + rep(a0_j, each = n) + epsilon_ij
+  data_sim <- data.frame(y = y, x = x_ij, w = rep(w_j, each = n), group = factor(group))
+  
+  full_model <- lmer(y ~ x + w + (x | group), data = data_sim, REML = FALSE)
+  restricted_model <- lmer(y ~ x + w + (1 | group), data = data_sim, REML = FALSE)
+  
+  lambda <- 2 * (logLik(full_model) - logLik(restricted_model))
+  LRT_stats[s] <- as.numeric(lambda)
+  
+  p_values[s] <- 0.5 * (1 - pchisq(lambda, df = 1)) + 0.5 * (1 - pchisq(lambda, df = 2))
+}
+```
+
+```{r}
+mpar()
+hist(LRT_stats, col="lightblue", prob=TRUE, xlab="lambda", nclass=15)
+xs <- seq(0, 10, length=100)
+lines(xs, 0.5 * dchisq(xs, df=1) + 0.5 * dchisq(xs, df=2), col="red")
+```
+```{r}
+hist(p_values, breaks = 30, probability = TRUE, col = "green",
+main = "Histogram of p-values",
+xlab = "p-value")
+```
+
+From the overlay plot, we see that the histogram of the LRT statistics fits well with the null distribution $\lambda \sim \frac{1}{2}\chi_1^2 + \frac{1}{2}\chi_2^2$. The LRT statistics are positively skewed, with most of the values concentrated near 0, gradually tapering off, which aligns with the theoretical mixed chi-square distribution
+
+The histogram of p-values appears to be uniformly distributed between 0 and 1. Though we do see that the histogram is centered slightly towards larger p-values. This is expected since with fewer groups, the random effects are not estimated as precisely, leading to higher variability in the model fits. This increased variability causes the likelihood ratio test to be less sensitive, resulting in p-values that are often higher and tend to cluster towards larger values.
+
+### Q1 (e)
+#### We will first try with the model parameters:
+
+```{r}
+m <- 20
+n <- 20 
+num_simulations <- 1000
+
+beta0 <- 3
+beta1 <- 6
+beta2 <- 9
+sigma2 <- 1
+psi0_sq <- 2
+psi1_sq <- 0
+psi01 <- 0
+
+LRT_stats <- numeric(num_simulations)
+p_values <- numeric(num_simulations)
+
+for (s in 1:num_simulations) {
+  
+  w_j <- rnorm(m)
+  a0_j <- rnorm(m, mean = 0, sd = sqrt(psi0_sq))
+  x_ij <- rnorm(m * n)
+  epsilon_ij <- rnorm(m * n, mean = 0, sd = sqrt(sigma2))
+  
+  group <- rep(1:m, each = n)
+  y <- beta0 + beta1 * x_ij + beta2 * rep(w_j, each = n) + rep(a0_j, each = n) + epsilon_ij
+  data_sim <- data.frame(y = y, x = x_ij, w = rep(w_j, each = n), group = factor(group))
+  
+  full_model <- lmer(y ~ x + w + (x | group), data = data_sim, REML = FALSE)
+  restricted_model <- lmer(y ~ x + w + (1 | group), data = data_sim, REML = FALSE)
+  
+  lambda <- 2 * (logLik(full_model) - logLik(restricted_model))
+  LRT_stats[s] <- as.numeric(lambda)
+  
+  p_values[s] <- 0.5 * (1 - pchisq(lambda, df = 1)) + 0.5 * (1 - pchisq(lambda, df = 2))
+}
+```
+```{r}
+mpar()
+hist(LRT_stats, col="lightblue", prob=TRUE, xlab="lambda", nclass=15)
+xs <- seq(0, 10, length=100)
+lines(xs, 0.5 * dchisq(xs, df=1) + 0.5 * dchisq(xs, df=2), col="red")
+```
+```{r}
+# Plot histogram of p-values
+hist(p_values, breaks = 20, probability = TRUE, col = "green",
+main = "Histogram of p-values",
+xlab = "p-value")
+```
+
+With different model parameters, the result appears to be closely matching with what we got from part (d), where the LRT statistics follows a $\frac{1}{2}\chi_1^2 + \frac{1}{2}\chi_2^2$ distribution, and the histogram of the p-value appears to be uniformly distributed that is slightly centered at larger p-values.
+
+#### We then only change the number of groups and see if the results remains similar.
+```{r}
+m <- 500
+n <- 20 
+num_simulations <- 1000
+
+beta0 <- 1
+beta1 <- 1
+beta2 <- 1
+sigma2 <- 1
+psi0_sq <- 1
+psi1_sq <- 0
+psi01 <- 0
+
+LRT_stats <- numeric(num_simulations)
+p_values <- numeric(num_simulations)
+
+for (s in 1:num_simulations) {
+  
+  w_j <- rnorm(m)
+  a0_j <- rnorm(m, mean = 0, sd = sqrt(psi0_sq))
+  x_ij <- rnorm(m * n)
+  epsilon_ij <- rnorm(m * n, mean = 0, sd = sqrt(sigma2))
+  
+  group <- rep(1:m, each = n)
+  y <- beta0 + beta1 * x_ij + beta2 * rep(w_j, each = n) + rep(a0_j, each = n) + epsilon_ij
+  data_sim <- data.frame(y = y, x = x_ij, w = rep(w_j, each = n), group = factor(group))
+  
+  full_model <- lmer(y ~ x + w + (x | group), data = data_sim, REML = FALSE)
+  restricted_model <- lmer(y ~ x + w + (1 | group), data = data_sim, REML = FALSE)
+  
+  lambda <- 2 * (logLik(full_model) - logLik(restricted_model))
+  LRT_stats[s] <- as.numeric(lambda)
+  
+  p_values[s] <- 0.5 * (1 - pchisq(lambda, df = 1)) + 0.5 * (1 - pchisq(lambda, df = 2))
+}
+```
+```{r}
+mpar()
+hist(LRT_stats, col="lightblue", prob=TRUE, xlab="lambda", nclass=15)
+xs <- seq(0, 10, length=100)
+lines(xs, 0.5 * dchisq(xs, df=1) + 0.5 * dchisq(xs, df=2), col="red")
+```
+```{r}
+# Plot histogram of p-values
+hist(p_values, breaks = 20, probability = TRUE, col = "green",
+main = "Histogram of p-values",
+xlab = "p-value")
+```
+
+When we increase the number of groups, we see that the p-value distribution appears to be more uniformly distributed. This is expected. As the number of groups increases, the random effects are estimated with greater precision. The likelihood ratio test becomes more sensitive, and the p-values start to behave more like what you would expect under the null hypothesis, which is uniformly distributed between 0 and 1. With more groups, there’s less variability in the test statistic under the null, so the p-values become more evenly spread across their range.
+
+### Q2 (a)
+```{r}
+data = dget("C:/Users/LEGION/OneDrive - Duke University/610/Data/Earthquake.txt")
+hlm_model <- lmer(accel ~ Richter + distance + soil + (distance + soil | Quake), REML = F, data = data)
+summary(hlm_model)
+residuals = residuals(hlm_model)
+fitted_values = fitted(hlm_model)
+qqplot <- ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("Q-Q Plot of Residuals") +
+  theme_minimal()
+print(qqplot)
+```
+
+We observe the following results from the model summary:
+
+- Random effects: 
+  * The random intercept for each earthquake (quake) group has a variance of 8.928e-03, indicating variability in acceleration across different earthquakes. 
+  * The random slopes for distance and soil type have variances of 4.058e-06 and 9.657e-06, respectively. 
+
+These small variances suggest that the random effects associated with distance and soil type are relatively minor compared to the overall variation. There is a high negative correlation (-0.92) between the random effects for distance and soil type, suggesting a strong inverse relationship in how these covariates influence the acceleration data at the random effects level.
+
+- Fixed effects: 
+  * The fixed effect for the Richter scale is positive and statistically significant $(|t| = 2.348)$, indicating that higher earthquake magnitudes lead to higher vertical accelerations.
+  * The fixed effect for distance is negative and statistically significant $(|t|= 5.062)$, showing that acceleration decreases as the distance from the epicenter increases.
+  * The fixed effect for soil type is negative but not statistically significant $(|t| = 0.39)$.
+
+Regarding the observation for normality from the Q-Q plot, the points deviate noticeably from the diagonal line, especially in the tails. This suggest that the residuals are not normally distributed. The Q-Q plot indicates that the assumptions of normally distributed residuals does not hold for this model. 
+
+### Q2 (b)
+```{r}
+library(ggplot2)
+ggplot(data, aes(x = distance, y = accel)) +
+  geom_point() +
+  ggtitle("Scatter Plot of accel vs distance") +
+  xlab("Distance from Epicenter") +
+  ylab("Vertical Acceleration") +
+  theme_minimal()
+```
+
+No, the relationship does not look linear.
+
+```{r}
+# Log-log transformation on both variables pooled across groups
+ggplot(data, aes(x = log(distance), y = log(accel))) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  ggtitle("Log-Log Scatter Plot of log(accel) vs log(distance) (Pooled Across Groups)") +
+  xlab("Log of Distance") +
+  ylab("Log of Vertical Acceleration") +
+  theme_minimal()
+```
+
+The log-log scatter plot shows a much more linear relationship compared to the original plot. 
+
+### Q2 (c)
+```{r}
+hlm_log_log <- lmer(log(accel) ~ log(distance) + Richter + soil + (log(distance) + soil | Quake), data = data)
+summary(hlm_log_log)
+residuals = residuals(hlm_log_log)
+fitted_values = fitted(hlm_log_log)
+qqplot <- ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("Q-Q Plot of Residuals") +
+  theme_minimal()
+print(qqplot)
+```
+
+The residuals are much more closely aligned with the diagonal line, especially in the middle range of the distribution. This suggests that the assumption of normality for the residuals is better satisfied in the log-log model.
+
+### Q2 (d)
+We will first find out the null distribution. For testing of the random slope of soil, since there are three random effects under the full model and 2 random effects under the full model, the null distribution is
+$$\lambda\sim\frac{1}{2}\chi_2^2 + \frac{1}{2}\chi_3^2.$$
+This is the same with the log-log transformed model. 
+
+For the fixed effect test, there is exactly one fixed effect being zero. Thus, the LRT statistic follows a chi-squared distribution with 1 df. Namely, $\lambda \sim \chi_1^2$.
+```{r}
+library(lme4)
+data$log_accel <- log(data$accel)
+data$log_distance <- log(data$distance)
+fit_full <- lmer(log_accel ~ log_distance + soil + Richter + 
+                 (log_distance + soil | Quake), data = data, REML = FALSE)
+
+# Random Slope of Soil
+fit_no_soil_slope <- lmer(log_accel ~ log_distance + soil + Richter + 
+                          (log_distance | Quake), data = data, REML = FALSE)
+LRT_soil <- 2 * (logLik(fit_full) - logLik(fit_no_soil_slope))
+LRT_soil_value <- as.numeric(LRT_soil)
+p_value_soil <- 0.5 * (1 - pchisq(LRT_soil_value, df = 2)) +
+                0.5 * (1 - pchisq(LRT_soil_value, df = 3))
+
+# Random Slope of log_distance
+fit_no_distance_slope <- lmer(log_accel ~ log_distance + soil + Richter + 
+                              (soil | Quake), data = data, REML = FALSE)
+LRT_distance <- 2 * (logLik(fit_full) - logLik(fit_no_distance_slope))
+LRT_distance_value <- as.numeric(LRT_distance)
+p_value_distance <- 0.5 * (1 - pchisq(LRT_distance_value, df = 2)) +
+                    0.5 * (1 - pchisq(LRT_distance_value, df = 3))
+
+# Fixed Effect of Soil
+fit_no_soil_fixed <- lmer(log_accel ~ log_distance + Richter + 
+                          (log_distance + soil | Quake), data = data, REML = FALSE)
+
+LRT_soil_fixed <- 2 * (logLik(fit_full) - logLik(fit_no_soil_fixed))
+LRT_soil_fixed_value <- as.numeric(LRT_soil_fixed)
+
+p_value_soil_fixed <- 1 - pchisq(LRT_soil_fixed_value, df = 1)
+
+# Fixed Effect of log_distance
+fit_no_distance_fixed <- lmer(log_accel ~ soil + Richter + 
+                              (log_distance + soil | Quake), data = data, REML = FALSE)
+
+LRT_distance_fixed <- 2 * (logLik(fit_full) - logLik(fit_no_distance_fixed))
+LRT_distance_fixed_value <- as.numeric(LRT_distance_fixed)
+
+p_value_distance_fixed <- 1 - pchisq(LRT_distance_fixed_value, df = 1)
+
+# Fixed Effect of Richter
+fit_no_richter_fixed <- lmer(log_accel ~ log_distance + soil + 
+                             (log_distance + soil | Quake), data = data, REML = FALSE)
+
+LRT_richter_fixed <- 2 * (logLik(fit_full) - logLik(fit_no_richter_fixed))
+LRT_richter_fixed_value <- as.numeric(LRT_richter_fixed)
+
+p_value_richter_fixed <- 1 - pchisq(LRT_richter_fixed_value, df = 1)
+
+test_results <- data.frame(
+  Test = c("Random Slope of Soil", "Random Slope of log_distance", 
+           "Fixed Effect of Soil", "Fixed Effect of log_distance", 
+           "Fixed Effect of Richter"),
+  LRT_Value = c(LRT_soil_value, LRT_distance_value, LRT_soil_fixed_value, 
+                LRT_distance_fixed_value, LRT_richter_fixed_value),
+  P_value = c(p_value_soil, p_value_distance, p_value_soil_fixed, 
+              p_value_distance_fixed, p_value_richter_fixed)
+)
+print(test_results)
+```
+- Random slope of soil
+The LRT statistic for the random slope of soil is 5.765. The p-value is 0.0898, which is above the 0.05 threshold. This suggests that there is no significant across-quake heterogeneity in the slope of soil.
+
+- Random slope of log-transformed distance
+The LRT statistic for the random slope of log_distance is 50.696. The p-value is 3.33e-11, which is extremely small. This provides very strong evidence against the null hypothesis, indicating significant heterogeneity in the slope of log_distance across quakes.
+
+- Fixed effect of soil
+The LRT statistic for the fixed effect of soil is 0.956. The p-value is 0.328, which is above 0.05. This suggests that soil does not have a statistically significant fixed effect.
+
+- Fixed effect of log-transformed distance
+The LRT statistic for the fixed effect of log_distance is 34.83. The LRT statistic for the fixed effect of log_distance is 34.83.
+
+- Fixed effect of Richter
+The LRT statistic for the fixed effect of Richter is 22.33. The p-value is 2.30e-06, which is very small, indicating a highly significant fixed effect for Richter scale magnitude.
+
+In conclusion, there is significant across-quake heterogeneity in the slope of log_distance but no significant heterogeneity in the slope of soil. The fixed effects for both log_distance and Richter scale are statistically significant, while the fixed effect of soil is not significant.
+
+### Q2 (e)
+Based on the findings from the LRT and the hierarchical linear model, we can draw several conclusions regarding the relationship between vertical acceleration and the explanatory variables.
+
+First, the fixed effect of log-transformed distance is statistically significant and negative. This indicates that as the distance from the earthquake's epicenter increases (after log transformation), the vertical acceleration decreases. This result is expected, as greater distances from the epicenter typically result in reduced ground motion and therefore lower acceleration. The p-value for this effect is extremely small (3.59e-09), providing strong evidence that the distance from the epicenter is a key determinant of earthquake acceleration.
+
+The Richter scale magnitude also has a highly significant positive fixed effect. This suggests that as the magnitude of the earthquake increases, the vertical acceleration at a given location also increases. Given that larger earthquakes release more energy, this positive relationship is consistent with physical expectations, and the very small p-value (2.30e-06) highlights the importance of this variable.
+
+On the other hand, the fixed effect of soil type is not statistically significant (p-value = 0.328). This suggests that, in this model, soil type does not have a strong or consistent effect on the vertical acceleration when controlling for other factors like distance and earthquake magnitude. However, the random slope of soil type across different quakes is somewhat marginal, with a p-value of 0.0898. This could indicate mild heterogeneity in how soil type impacts acceleration across different quakes, although it is not strongly significant.
+
+Finally, there is significant across-quake heterogeneity in the slope of log-transformed distance, as evidenced by the very small p-value (3.33e-11). This means that the effect of distance on vertical acceleration varies significantly across different earthquakes. This heterogeneity may arise due to varying geological or environmental factors that alter how distance affects acceleration in different quakes.
+
+In summary, both distance and Richter scale magnitude are important and significant predictors of vertical acceleration. While soil type does not have a significant fixed effect, there may be some variability in how it influences acceleration across different earthquakes.
+

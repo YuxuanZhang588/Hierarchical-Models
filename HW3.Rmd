@@ -1,0 +1,99 @@
+---
+title: "HW3"
+output: html_document
+date: "2024-09-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r}
+cd4 = read.table("C:/Users/LEGION/OneDrive - Duke University/610/cd4.dat", header = TRUE)
+nels = dget("C:/Users/LEGION/OneDrive - Duke University/610/nels_math_ses.txt")
+```
+### 2(a)
+```{r}
+model1 <- lm(mathscore ~ as.factor(school), data = nels)
+z.nels<-abs(model1$res)
+leveneTest <- anova(lm(z.nels~as.factor(school), data = nels))
+leveneTest
+```
+Our null hypothesis is that the within-group residual variance across schools are the same. From the result of the Levene's test, we see that the p-value associated with the school factor is 0.07887, greater than 0.05. Therefore, we fail to reject the null hypothesis. There is insufficient evidence of different residual variances across schools, meaning the residual variances are fairly equal across schools in this model.
+
+### 2(b)
+```{r}
+model2 = lm(mathscore ~ ses:as.factor(school) + as.factor(school), data = nels)
+z.nels<-abs(model2$res)
+leveneTest <- anova(lm(z.nels~as.factor(school), data = nels))
+leveneTest
+```
+
+Our null hypothesis is that the within-group residual variance are the same across schools. From the result, we see a p-value of 0.1679, greater than the significance level of 0.05. Therefore, we fail to reject the null hypothesis. This suggest that there is insufficient evidence to conclude that the within-group residual variance are different, meaning that the residual variances are fairly equal across schools in this model as well. 
+
+### 2(c)
+Comparing the results of the two models, we see that the mean squared error decreases after adding the 'SES' factor into our model. We observe that the F-statistic decreases, and the p-value increases, suggesting that the additional SES variable is accounting for part of the variation that was previously explained by the group effects alone in Model 1. In model 1, the within-group variances were primarily attributed to differences between schools. However, in model 2, by introducing SES as a covariate, some of the within-group variance is now explained by SES, leading to a lower mean squared residual.
+
+### 3(a)
+
+```{r}
+fit0 <- lm(cd4 ~ time, data = cd4)
+fit1 <- lm(cd4 ~ time * trt, data = cd4)
+anova(fit0, fit1)
+```
+From the result, we see a F-value of 6.6213, and a p-value of 0.001387, which is lower than the significance level 0.05. This suggests that the model with the treatment effect (fit 0) explains significantly more variation in the CD4 cell percentages than the model without the treatment effect (fit 0). Therefore, we can conclude that there is strong evidence for a treatment effect in the CD4 cell percentages.  
+
+### 3(b)
+```{r}
+fit2 <- lm(cd4 ~ time * as.factor(pid), data = cd4)
+fit2b <- lm(cd4 ~ time * as.factor(pid) + trt * time, data = cd4)
+anova(fit2, fit2b)
+```
+
+No, this approach does not adequately evaluate the effects of trt while accounting for across-subject heterogeneity. We found out that the pid and treatment are confounding variables since each pid is only associated with exactly one type of treatment, as shown below.
+
+```{r}
+library(dplyr)
+pid_treatment_check <- cd4 %>%
+  group_by(pid) %>%
+  summarise(unique_trt = n_distinct(trt))
+any(pid_treatment_check$unique_trt > 1)
+```
+We can also see that the two models are identical from the ANOVA result. When we attempt to separate the effects of treatment from the individual effects of pid, since pid and t   rt are confounded, we cannot distinguish the effects between the two with model 2b. Thus, this approach does not evaluate the effects of trt while accounting for across-subject heterogeneity.
+
+### 3(c)
+```{r}
+library(dplyr)
+library(ggplot2)
+subject_trt <- cd4 %>% select(pid,trt) %>% distinct()
+subject_coeffs <- cd4 %>% 
+  group_by(pid) %>%
+  do(model = lm(cd4 ~ time, data = .)) %>%
+  summarise(intercept= coef(model)[1], slope = coef(model)[2], pid) 
+subject_coeffs <- left_join(subject_coeffs, subject_trt, by = "pid")
+subject_coeffs_filtered <- subject_coeffs %>%
+  filter(is.finite(intercept), is.finite(slope))
+ggplot(subject_coeffs_filtered, aes(x = intercept, fill = as.factor(trt))) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+  labs(title = "Histogram of Intercepts (beta_0,j)", x = "Intercept", y = "Frequency") +
+  scale_fill_discrete(name = "Treatment") +
+  theme_minimal()
+
+ggplot(subject_coeffs_filtered, aes(x = slope, fill = as.factor(trt))) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+  labs(title = "Histogram of Slopes (beta_1,j)", x = "Slope", y = "Frequency") +
+  scale_fill_discrete(name = "Treatment") +
+  theme_minimal()
+  
+t_test_intercept<- t.test(subject_coeffs$intercept ~ subject_coeffs$trt) 
+t_test_slope <- t.test(subject_coeffs$slope ~ subject_coeffs$trt) 
+print(t_test_intercept) 
+print(t_test_slope)
+```
+From the two histograms, we see that both treatment groups have similar distributions. The t-test result gives us a p-value of 0.5207 for intercept and 0.6024 for slope, where both are larger than 0.05. This indicates that there is no significant difference between the intercepts and slops of the two treatment groups, which aligns with what we observe from the histograms. 
+
+There are several limitations of this model. 
+
+- There is a loss of power when we separate each subject. We have 254 subjects in total and we only have 1072 total data points. Then when we fit this model for each separate subject, there are approximately only 4-5 data points per subject. The models are very weak with this kind of sample size. 
+
+- The t-test does not account for possible random effects. We are essentially treating each subject's data in isolation. This means that any individual differences are not modeled in a systematic way. If some subjects naturally start with higher CD4 levels or respond differently to treatment, this variability should be included in the model. A mixed-effects model might be more appropriate.
